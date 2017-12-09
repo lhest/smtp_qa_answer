@@ -8,13 +8,11 @@ class TestApiUsingRequests(unittest.TestCase):
 
     def get_data(self, url):
         r = requests.get(url)
-        data = r.json()
-        print(r)
+        data = r.json()        
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.headers['content-type'], 'application/json; charset=UTF-8')
         self.assertIsInstance(data, dict)
-        return data
-        print(r)
+        return data        
 
     def test_get_members(self):
         data = self.get_data('{}/members'.format(main_url))
