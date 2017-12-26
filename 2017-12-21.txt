@@ -1,0 +1,132 @@
+Работа с библиотеками и подключение к ним
+
+log.file
+
+Для работы с библиотеками необходимо:
+1. java archiveБиблиотека - хранятся обычно в .jar (dependency) файлах (джар прописывали в депенденси для веб-драйвера и мавен все подтянул, но есть недостаток у этого способа, потому что
+нужен интернет)
+джарник можно скачать руками и подключить к своему проекту
+2. .properties - настройка этого джарника (файлик)
+3. [.class] если можем напрямую общаться с командами, тогда работаем напрямую, а если же нет (например работа с БД), тогда нужен промежуточный класс, который
+будет взаимодействовать с джарником
+
+_________
+1. найдем maven log4j 1.2.17 и скопируем в свой пом файлик:
+<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+
+вставляем после блока seleniumhq.org
+
+2. idea говорит, что надо заимпортить maven - импортим
+3. добавляем после dependencies блок, который говорит мавену, где будут хранится наши ресурсы
+	между тэгами directory оставить только src и опять импортим
+4. log4j (который скачала из скайпа) должен быть в папке src
+
+_________
+теперь идем в тест:
+1. мейнпейдж
+2. переходим в мейн - пейджес- новый- класс - ParentPage
+3. now go to ParentPage 
+public class ParentPage {
+//Logger (Apache.log4j - from droopdown list)
+protected Logger logger - объявили переменную
+//теперь инициализируем c помощью конструктора(наводим курсор на класс и жмем Alt+ insert, но в данном случае это не используем, потому что идея предлагает неверный вариант)
+//пишем руками, ниже - конструктор:
+public ParentPage () {
+logger = Logger.getLogger (getClass());
+}
+
+идем мейн пейдж, вверху где класс пишем extends ParentPage
+
+обратимся к изаватарпрезент
+logger.info ("Test");
+loggerogger.error("Error");
+loggerogger.debug("Debug");
+
+запускаем тест - в консоли должен быть лог (присутствует тест и эррор)
+
+посмотреть в своем проекте должна появиться папочка log
+
+идем в src -> log4j.prooperties -> click (open):
+в нем есть три блока
+1. log levels
+log4j.rootLogger=DEBUG, stdout,R (вместо инфо написать дебаг)
+сохранить файлик 
+и перезапустить тест
+
+лог дебаг - это служебная информация, которую пишет апликейшен в том случае, если недостаточно информации с обычного лога
+все с ним хорошо, но он занимает кучу место, ПОЭТОМУ возвращаем INFO вместо DEBUG
+
+2. следующий блок - Console appender - отвечает за вывод в консоль - как и что выводим
+PatternLAyout - разметка когда что-то коммитим, убираем все значения параметров (пятерки и т.д.)
+
+3. почитать
+
+_________
+перенести увеличение окна и имплиситли вейт в блок бифор под веб-драйвером
+
+идем в пейджес - нью класс - LoginPage
+public class LoginPage extends ParentPage {
+
+_________
+теперь идем в ПерентПейдж
+public class ParentPage { - это уже есть, добавляем ниже строку:
+WebDriver webDriver; - заимпортить
+ююю
+public ParentPage (WebDriver webdriver) {
+this.webDriver = webDriver;
+logger = Logger.getLogger (getClass()); - это тоже есть
+
+теперь иди в мейнпейдж и удали WebDriver webDriver (строка внизу под экстендз ПерентПейдж,  а конструкцию с this заменить на super(webDriver);
+
+теперь идем в LoginPage, кликаем на ParentPage (потому что красная) - появляется дропдаун меню - create constructor:
+public LoginPage (WebDriver webDriver) {
+super(webDriver);
+}
+
+дальше здесь же метод, который открывает один урл логин-страницы:
+public void openLoginPage () {
+try{
+webDriver.get("http://v3.test.itpmgroup.com");
+logger.info("Login page was opened");
+}catch (Exception e) {
+logger.error ("Can not open url");
+Assert.fail("Can not open url");    - останавливает тест полностью, если упадет такая ошибка
+}
+}
+
+public void enterTextIntoInputLogin (String login) {
+try{
+webDriver.findElement(By.name("_username")).clear();
+webDriver.findElement(By.name("_username")).sendKeys(login);
+logger.info(login + " was inputed into input ");
+}catch (Exception e) {
+logger.error ("Can not work with element");
+Assert.fail("Can not work with element");
+}
+
+переходим в логинтест найди мейнпейдж - контрал + клик - переходим в паренттест и дописываем:
+
+protected LoginPage loginPage;
+
+переходим в блок бифор, добавлеяем:
+loginPage = new LoginPage (webDriver);         - под MainPage
+
+
+идем в LoginTest под паблик войд валидлогин (используй контрал пробел, когда пишешь):
+loginPage.enterTextIntoInputLogin("Student");
+
+_________
+строки, которые прописаны под аватаризпрезент (тест, ерор и дебаг - удалить или закомментить)
+
+тесткейсы на общий проект + на них локаторы
+свой проект + тесткейсы и локаторыи дописать пароль и кнопку в логинпейдж
+
+посмотреть слайд на гуглдрайве - проджектстракчер
+
+
+
