@@ -48,5 +48,5 @@ if __name__ == '__main__':
 	
 	
 	'''
-	TEEEEEEEEEEEEEEESTTTTTTTTTT
+	СКОРО НОВЫЙ ГОД!!!!!!!!!!!!!!!
 	'''
